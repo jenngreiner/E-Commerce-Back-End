@@ -28,14 +28,14 @@ Product.init(
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    category_id: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'category',
-        key: 'id',
-        unique: false
-      }
-    },
+    // category_id: {
+    //   type: DataTypes.INTEGER,
+    //   references: {
+    //     model: 'category',
+    //     key: 'id',
+    //     unique: false
+    //   }
+    // },
   },
   {
     sequelize,

@@ -3,19 +3,19 @@ const { Category, Product } = require('../../models');
 
 // The `/api/categories` endpoint
 
-router.get('/', async (req, res) => {
+router.get('/', (req, res) => {
   // find all categories
   try {
-    const categoryData = await Category.findAll(
+    const categoryData = Category.findAll(
       // be sure to include its associated Products
-      {
-        include: [
-          {
-            model: Product,
-            attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
-          }
-        ]
-      }
+      // {
+      //   include: [
+      //     {
+      //       model: Product,
+      //       attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
+      //     }
+      //   ]
+      // }
     );
     res.status(200).status(categoryData);
   } catch (err) {
@@ -26,15 +26,17 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   // find one category by its `id` value
   try {
-    const categoryData = await Category.findByPk(req.params.id, {
-      // be sure to include its associated Products
-      include: [
-        {
-          model: Product,
-          attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
-        }
-      ]
-    });
+    const categoryData = await Category.findByPk(req.params.id,
+      //   {
+      //   // be sure to include its associated Products
+      //   include: [
+      //     {
+      //       model: Product,
+      //       attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
+      //     }
+      //   ]
+      // }
+    );
     // if there are no categories for the id provided, return an error message
     if (!categoryData) {
       res.status(404).json({ message: 'No category found with this id!' });
