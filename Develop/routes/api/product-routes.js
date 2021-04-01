@@ -4,53 +4,49 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', async (req, res) => {
+router.get('/', (req, res) => {
   // find all products
-  try {
-    const productData = await Product.findAll(
-      // be sure to include its associated Category and Tag data
-      // {
-      //   include: [
-      //     {
-      //       model: Category,
-      //       attributes: ['category_id', 'category_name']
-      //     },
-      //     {
-      //       model: Tag,
-      //       attributes: ['tag_id', 'tag_name']
-      //     }
-      //   ]
-      // }
-    );
-    res.status(200).status(productData);
-  } catch (err) {
-    res.status(500).json(err);
-  }
+  Product.findAll({
+    include: [
+      {
+        model: Category,
+        attributes: ['id', 'category_name']
+      },
+      {
+        model: Tag,
+        attributes: ['id', 'tag_name']
+      }
+    ]
+  }).then(productData => res.json(productData)).catch(err => res.status(500).json(err));
 });
 
+
 // get one product
-router.get('/:id', async (req, res) => {
+router.get('/:id', (req, res) => {
   // find a single product by its `id`
-  try {
-    const productData = await Product.findByPk(req.params.id,
-      // be sure to include its associated Category and Tag data
+  Product.findOne({
+    where: {
+      id: req.params.id,
+    },
+    // be sure to include its associated Category and Tag data
+    include: [
       {
-        include: [
-          {
-            model: Category,
-            attributes: ['category_id', 'category_name']
-          },
-          {
-            model: Tag,
-            attributes: ['tag_id', 'tag_name']
-          }
-        ]
+        model: Category,
+        attributes: ['id', 'category_name']
+      },
+      {
+        model: Tag,
+        attributes: ['id', 'tag_name']
       }
-    );
+    ]
+  }).then(productData => {
+    if (!productData) {
+      res.status(404).json({ message: 'No product found with this id!' });
+      return;
+    }
     res.status(200).status(productData);
-  } catch (err) {
-    res.status(500).json(err);
-  }
+  })
+    .catch(err => res.status(500).json(err));
 });
 
 // create new product
