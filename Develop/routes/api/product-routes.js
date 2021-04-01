@@ -4,49 +4,60 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   // find all products
-  Product.findAll({
-    include: [
+  try {
+    const productData = await Product.findAll(
       {
-        model: Category,
-        attributes: ['id', 'category_name']
-      },
-      {
-        model: Tag,
-        attributes: ['id', 'tag_name']
+        include: [
+          {
+            model: Category,
+            attributes: ['id', 'category_name']
+          },
+          {
+            model: Tag,
+            attributes: ['id', 'tag_name']
+          }
+        ]
       }
-    ]
-  }).then(productData => res.json(productData)).catch(err => res.status(500).json(err));
+    );
+    const products = productData.map((product) => product.get({ plain: true }));
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 
 // get one product
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   // find a single product by its `id`
-  Product.findOne({
-    where: {
-      id: req.params.id,
-    },
-    // be sure to include its associated Category and Tag data
-    include: [
-      {
-        model: Category,
-        attributes: ['id', 'category_name']
+  try {
+    const productData = await Product.findOne({
+      where: {
+        id: req.params.id,
       },
-      {
-        model: Tag,
-        attributes: ['id', 'tag_name']
-      }
-    ]
-  }).then(productData => {
+      // be sure to include its associated Category and Tag data
+      include: [
+        {
+          model: Category,
+          attributes: ['id', 'category_name']
+        },
+        {
+          model: Tag,
+          attributes: ['id', 'tag_name']
+        }
+      ]
+    });
     if (!productData) {
       res.status(404).json({ message: 'No product found with this id!' });
       return;
     }
-    res.status(200).status(productData);
-  })
-    .catch(err => res.status(500).json(err));
+    const products = productData.map((product) => product.get({ plain: true }));
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 // create new product
