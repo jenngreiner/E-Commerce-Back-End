@@ -53,8 +53,7 @@ router.get('/:id', async (req, res) => {
       res.status(404).json({ message: 'No product found with this id!' });
       return;
     }
-    const products = productData.map((product) => product.get({ plain: true }));
-    res.status(200).json(products);
+    res.status(200).json(productData);
   } catch (err) {
     res.status(500).json(err);
   }
